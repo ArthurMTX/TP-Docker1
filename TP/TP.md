@@ -128,3 +128,36 @@ ENTRYPOINT ["ping", "-c", "4", "www.iutbeziers.fr"]
 ``` 
 Ensuite, via l'argument `--entrypoint`, il faut taper la commande suivante : `docker run --rm -it --entrypoint traceroute pingfour:traceroute www.mtx.dev`. Voici ce qui est affiché :
 ![docker-run-pingfour-traceroute](Images/docker_run_pingfour_traceroute.png)
+
+8- Pour commit une image, il faut taper la commande suivante : `docker commit pingfour`. Voici ce qui est affiché :
+![docker-commit-pingfour](Images/docker_commit_pingfour.png)
+
+### 4.2. Installation d’un "insecure registry" sur votre poste de travail
+
+Pour créer un insecure registry, il faut éditer le fichier `daemon.json` qui se trouve dans le dossier `/etc/docker/`. Voici ce qui est affiché :
+![docker-daemon-json](Images/docker_daemon_json.png)
+Ensuite, il faut redémarrer le service docker avec la commande suivante : `sudo systemctl restart docker`. Pas besoin de se login car il n'y pas de certificat.
+Il faut d'abord lancer le registry avec la commande suivante : `docker run -d -p 5000:5000 --restart=always --name MTXRegistry registry:2`. Voici ce qui est affiché :
+![docker-run-registry](Images/docker_run_registry.png)
+
+Pour envoyer une image sur le registry, il faut taper la commande suivate : `docker push localhost:5000/pingfour`. Voici ce qui est affiché :
+![docker-push-registry](Images/docker_push_registry.png)
+
+Pour récupérer une image du registry, il faut taper la commande suivante : `docker pull localhost:5000/pingfour`. Voici ce qui est affiché :
+![docker-pull-registry](Images/docker_pull_registry.png)
+
+### 4.3 Création d’un Dockerfile afin de générer une image Debian SSH
+
+```Dockerfile
+FROM registry.iutbeziers.fr/debianiut
+
+RUN apt-get update && apt-get install -y openssh-server
+
+RUN mkdir /var/run/sshd
+
+RUN echo 'root:mon_mot_de_passe' | chpasswd
+
+EXPOSE 2222
+
+CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config"]
+```

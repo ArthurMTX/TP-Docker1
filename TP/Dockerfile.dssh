@@ -1,0 +1,11 @@
+FROM registry.iutbeziers.fr/debianiut
+
+RUN apt-get update && apt-get install -y openssh-server
+
+RUN mkdir /var/run/sshd
+
+RUN echo 'root:mon_mot_de_passe' | chpasswd
+
+EXPOSE 2222
+
+CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config"]
