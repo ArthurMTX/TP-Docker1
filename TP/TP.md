@@ -103,4 +103,28 @@ FROM debian:mtx
 RUN apt-get update && apt-get install -y iputils-ping
 ENTRYPOINT ["ping", "-c", "4", "www.iutbeziers.fr"]
 ```
+Voici la commande utilisée pour créer l'image :
+`sudo docker build -t pingfour -f Dockerfile.pingfour .`. Voici ce qui est affiché :
+![docker-build-pingfour](Images/docker_build_pingfour.png)
 
+5- Pour créer un container à partir de l'image, il faut taper la commande suivante : `docker run --rm -it pingfour`. Voici ce qui est affiché :
+![docker-run-pingfour](Images/docker_run_pingfour.png)
+Le `--rm` supprime le container une fois qu'il est arrêté.
+
+6- Pour changer la destination du ping et le nombre de ping, il faut changer ENTRYPOINT dans le Dockerfile. Voici le nouveau Dockerfile :
+```Dockerfile
+FROM debian:mtx
+RUN apt-get update && apt-get install -y iputils-ping
+CMD ["ping", "-c", "4", "www.iutbeziers.fr"]
+```
+Ensuite, il faut rebuild et lancer le container via cette commande ``docker run --rm -it pingfour:beta ping www.mtx.dev -c 10`` Voici ce qui est affiché :
+![docker-run-pingfour-beta](Images/docker_run_pingfour_beta.png)
+
+7- Pour changer la commande ping par traceroute il faut ajouter le paquet traceroute dans le Dockerfile. Voici le nouveau Dockerfile :
+```Dockerfile
+FROM debian:mtx
+RUN apt-get update && apt-get install -y iputils-ping traceroute
+ENTRYPOINT ["ping", "-c", "4", "www.iutbeziers.fr"]
+``` 
+Ensuite, via l'argument `--entrypoint`, il faut taper la commande suivante : `docker run --rm -it --entrypoint traceroute pingfour:traceroute www.mtx.dev`. Voici ce qui est affiché :
+![docker-run-pingfour-traceroute](Images/docker_run_pingfour_traceroute.png)
