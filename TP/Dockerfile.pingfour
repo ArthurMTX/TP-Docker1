@@ -1,0 +1,3 @@
+FROM debian:mtx
+RUN apt-get update && apt-get install -y iputils-ping
+ENTRYPOINT ["ping", "-c", "4", "www.iutbeziers.fr"]
